@@ -227,7 +227,7 @@ function projectWizardRailHTML(w){
   return `<aside class="pw-rail"><div class="pw-rail-head"><div class="pw-brand">${pwIcon('folder',20,1.9)}</div><h2 id="projectWizardLabel">新建项目</h2><p>只需名称即可创建，再按步骤绑定仓库、邀请成员。</p></div><ol class="pw-steps">${steps}</ol><p class="pw-rail-foot">所有配置之后都能在项目设置里修改。</p></aside>`;
 }
 function projectWizardHeadHTML(w,title,lede){
-  return `<div class="pw-kicker">第 ${projectWizardStepIndex(w.step)+1} 步，共 ${projectWizardSteps().length-1} 步</div><h3 class="pw-title" id="projectWizardTitle" tabindex="-1">${title}</h3><p class="pw-lede">${lede}</p>${w.error?`<p class="pw-note is-err" role="alert">${escapeHTML(w.error)}</p>`:''}`;
+  return `<div class="pw-kicker">${lfT(`第 ${projectWizardStepIndex(w.step)+1} 步，共 ${projectWizardSteps().length-1} 步`,`Step ${projectWizardStepIndex(w.step)+1} of ${projectWizardSteps().length-1}`)}</div><h3 class="pw-title" id="projectWizardTitle" tabindex="-1">${title}</h3><p class="pw-lede">${lede}</p>${w.error?`<p class="pw-note is-err" role="alert">${escapeHTML(w.error)}</p>`:''}`;
 }
 function projectWizardNamePill(name){const filled=!!String(name||'').trim();return pwPill(filled?'已填写':'必填',filled?'ok':'need',' data-pw-name-pill')}
 function projectWizardBasicHTML(w){

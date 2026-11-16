@@ -818,6 +818,43 @@ paths:
             application/json:
               schema: {$ref: "#/components/schemas/PlatformCodeBuddyKey"}
         "403": {description: Platform administrator access or same-origin request required}
+  /api/platform/language:
+    get:
+      tags: [Users]
+      operationId: getPlatformInterfaceLanguage
+      summary: Show the platform-wide interface language
+      description: Platform administrators only.
+      responses:
+        "200":
+          description: Current setting
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/PlatformInterfaceLanguage"}
+        "403": {description: Platform administrator access required}
+    put:
+      tags: [Users]
+      operationId: savePlatformInterfaceLanguage
+      summary: Lock the interface language for everyone, or let users choose
+      description: >-
+        Platform administrators only; browser requests must be same-origin. "en" or "zh" shows every page
+        in that language and hides the language switch; an empty value lets each user switch.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [language]
+              properties:
+                language: {type: string, enum: ["", en, zh]}
+      responses:
+        "200":
+          description: Saved setting
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/PlatformInterfaceLanguage"}
+        "400": {description: Missing or unsupported language}
+        "403": {description: Platform administrator access or same-origin request required}
   /api/business-domains:
     get:
       tags: [BusinessDomains]
@@ -4218,6 +4255,12 @@ components:
         password: {type: boolean, description: False for accounts that sign in through GitHub or a gateway}
         codeBuddyApiKeyConfigured: {type: boolean}
         createdAt: {type: string, format: date-time}
+    PlatformInterfaceLanguage:
+      type: object
+      properties:
+        language: {type: string, enum: ["", en, zh], description: Empty when each user chooses their own language}
+        updatedAt: {type: string, format: date-time}
+        updatedBy: {type: string}
     PlatformCodeBuddyKey:
       type: object
       properties:

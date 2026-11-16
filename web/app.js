@@ -57,7 +57,7 @@ function pagerHTML(key, p){
     buttons+=`<button type="button" class="pager-page${n===page?' active':''}" data-page-key="${escapeHTML(key)}" data-page="${n}">${n}</button>`;
     prev=n;
   }
-  return `<nav class="pager" data-pager="${escapeHTML(key)}" aria-label="分页"><span class="pager-meta">第 ${p.start+1}–${p.end} 条 / 共 ${p.total} 条</span><div class="pager-nav"><button type="button" class="pager-btn" data-page-key="${escapeHTML(key)}" data-page="${page-1}" ${page<=1?'disabled':''}>上一页</button>${buttons}<button type="button" class="pager-btn" data-page-key="${escapeHTML(key)}" data-page="${page+1}" ${page>=pages?'disabled':''}>下一页</button></div></nav>`;
+  return `<nav class="pager" data-pager="${escapeHTML(key)}" aria-label="分页"><span class="pager-meta">${lfT(`第 ${p.start+1}–${p.end} 条 / 共 ${p.total} 条`,`${p.start+1}–${p.end} of ${p.total}`)}</span><div class="pager-nav"><button type="button" class="pager-btn" data-page-key="${escapeHTML(key)}" data-page="${page-1}" ${page<=1?'disabled':''}>上一页</button>${buttons}<button type="button" class="pager-btn" data-page-key="${escapeHTML(key)}" data-page="${page+1}" ${page>=pages?'disabled':''}>下一页</button></div></nav>`;
 }
 function goListPage(key, page){
   if(!state.listPages)state.listPages={};

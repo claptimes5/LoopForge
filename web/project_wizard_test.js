@@ -50,6 +50,7 @@ const ctx = {
   console, Event,
   state:{projectFilter:"agentflow",currentUser:{id:1},projectAdminDetailId:null,projectAdminTab:"basic",projectDraft:null,projectDraftFor:"",projectDraftBase:null,
     data:{projects,repositories,issues:[],users,workflows:[{id:"generic-backend-delivery",name:"后端交付",generic:true},{id:"wf",name:"Backend"}],businessDomains:[],mcpServers:[{id:"tapd",marketId:"70"}]}},
+  lfT:zh=>zh,
   escapeHTML:s=>String(s??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c])),
   safeColor:v=>/^#[0-9a-f]{3,8}$/i.test(String(v||""))?v:"#74829a",
   clone:v=>v==null?v:JSON.parse(JSON.stringify(v)),

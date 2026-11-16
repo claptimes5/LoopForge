@@ -250,7 +250,7 @@ function moveCredentialCatalogRow(catalog,row,step){
   if(step<0)target.before(row);else target.after(row);
   row.querySelector('[data-catalog-grip]')?.focus({preventScroll:true});
   credentialCatalogChanged(catalog);
-  announceCredentialCatalog(catalog,`已移到第 ${credentialCatalogRows(catalog).indexOf(row)+1} 位`);
+  announceCredentialCatalog(catalog,(i=>lfT(`已移到第 ${i} 位`,`Moved to position ${i}`))(credentialCatalogRows(catalog).indexOf(row)+1));
 }
 function startCredentialCatalogDrag(event,grip){
   if(event.button!==0)return;
@@ -1199,6 +1199,7 @@ const PLATFORM_TABS=[
   {id:'accounts',zh:'成员账号',en:'Accounts'},
   {id:'admins',zh:'平台管理员',en:'Admins'},
   {id:'sharedKey',zh:'共享 CodeBuddy Key',en:'Shared CodeBuddy Key'},
+  {id:'language',zh:'界面语言',en:'Interface language'},
 ];
 function platformTabsHTML(active){
   return `<div class="pa-tabs-wrap platform-tabs-wrap"><div class="pa-tabs platform-tabs" id="platformTabs" role="tablist" aria-label="平台管理分区">${PLATFORM_TABS.map(t=>{
@@ -1367,10 +1368,12 @@ function renderPlatformAdminPanel(){
     </div>
     `)}
     ${platformTabPanel('sharedKey',tab,platformSharedKeyHTML())}
+    ${platformTabPanel('language',tab,platformLanguageHTML())}
   `;
   bindPlatformTabs(host);
   loadPlatformAccounts(host);
   loadPlatformSharedKey(host);
+  loadPlatformLanguage(host);
   loadPlatformAdmins(host);
 }
 
@@ -1454,6 +1457,59 @@ function platformSharedKeyHTML(){
         </div>
       </form>
     </section>`;
+}
+// 平台管理 → 界面语言: lock every page to one language and hide the switch.
+const PLATFORM_LANGUAGE_OPTIONS=[
+  {value:'',label:'由成员自行切换',hint:'每个人可以用右上角的「中 / EN」按钮切换，默认中文。',badge:'由成员切换'},
+  {value:'en',label:'始终使用英文',hint:'所有人只看到英文界面，并隐藏语言切换按钮。',badge:'已锁定英文'},
+  {value:'zh',label:'始终使用中文',hint:'所有人只看到中文界面，并隐藏语言切换按钮。',badge:'已锁定中文'},
+];
+function platformLanguageHTML(){
+  return `
+    <section class="platform-admin-main-card" id="platformLanguageCard">
+      <div class="platform-admin-head">
+        <div class="platform-admin-head-meta">
+          <h2>全平台界面语言</h2>
+          <p>锁定后所有成员（包括登录页）都只看到这种语言，右上角的语言切换按钮也会隐藏。</p>
+        </div>
+        <span class="platform-admin-count-pill platform-status-pill" data-language-badge>${lfT('加载中','Loading')}</span>
+      </div>
+      <form id="platformLanguageForm" class="platform-shared-key-form" autocomplete="off">
+        <div class="platform-language-options" role="radiogroup" aria-label="界面语言">
+          ${PLATFORM_LANGUAGE_OPTIONS.map(o=>`<label class="platform-language-option"><input type="radio" name="language" value="${o.value}" disabled><span><b>${o.label}</b><small>${o.hint}</small></span></label>`).join('')}
+        </div>
+        <div class="platform-shared-key-footer">
+          <p class="platform-add-hint" data-language-meta></p>
+          <div class="platform-shared-key-actions"><button class="button primary" type="submit" disabled>保存</button></div>
+        </div>
+      </form>
+    </section>`;
+}
+async function loadPlatformLanguage(host){
+  const card=host.querySelector('#platformLanguageCard');if(!card)return;
+  const form=card.querySelector('#platformLanguageForm'),badge=card.querySelector('[data-language-badge]'),meta=card.querySelector('[data-language-meta]');
+  const radios=[...form.querySelectorAll('input[name="language"]')],submit=form.querySelector('button[type="submit"]');
+  const render=status=>{
+    const current=PLATFORM_LANGUAGE_OPTIONS.find(o=>o.value===(status?.language||''))||PLATFORM_LANGUAGE_OPTIONS[0];
+    radios.forEach(r=>{r.checked=r.value===current.value;r.disabled=false});
+    submit.disabled=false;
+    badge.textContent=current.badge;
+    badge.classList.remove('is-on','is-off');badge.classList.add(current.value?'is-on':'is-off');
+    const by=status?.updatedBy||'';
+    meta.textContent=by?lfT(`${by} 最后修改。`,`Last changed by ${by}.`):'';
+  };
+  try{render(await api('/api/platform/language'))}
+  catch(e){badge.textContent='加载失败';meta.textContent=e.message||'';return}
+  form.onsubmit=async e=>{
+    e.preventDefault();
+    const language=radios.find(r=>r.checked)?.value??'';
+    submit.disabled=true;
+    try{
+      render(await api('/api/platform/language',{method:'PUT',body:JSON.stringify({language})}));
+      toast('界面语言已保存，正在刷新页面','ok');
+      setTimeout(()=>location.reload(),600);
+    }catch(err){toast(err.message,'err');submit.disabled=false}
+  };
 }
 function platformAccountCreatedHTML(action,login,password){
   const who=`<b data-i18n-skip>${escapeHTML(login)}</b>`,secret=`<code>${escapeHTML(password)}</code>`;

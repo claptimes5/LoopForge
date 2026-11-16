@@ -1412,6 +1412,8 @@ const assert = require('node:assert/strict');
 const code = require('node:fs').readFileSync('` + appBundlePath(t) + `', 'utf8');
 global.state = {listPages:{}};
 function escapeHTML(v){return String(v??'')}
+let english = false;
+function lfT(zh, en){return english ? en : zh}
 eval(code.slice(code.indexOf('const LIST_PAGE_SIZE='), code.indexOf('function goListPage')));
 const items = Array.from({length:45}, (_,i)=>i+1);
 const p1 = paginateList('issues', items);
@@ -1421,6 +1423,9 @@ assert.equal(p1.pages, 3);
 assert.deepEqual(p1.items, items.slice(0,20));
 assert.equal(pagerHTML('issues', p1).includes('data-page-key="issues"'), true);
 assert.equal(pagerHTML('issues', p1).includes('第 1–20 条 / 共 45 条'), true);
+english = true;
+assert.equal(pagerHTML('issues', p1).includes('1–20 of 45'), true);
+english = false;
 state.listPages.issues = 3;
 const p3 = paginateList('issues', items);
 assert.equal(p3.page, 3);

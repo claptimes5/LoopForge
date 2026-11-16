@@ -48,6 +48,7 @@ function skillhubCardState(item,skills){
 }
 function skillhubCount(n){
   n=Number(n)||0;
+  if(typeof lfLang==='function'&&lfLang()==='en')return new Intl.NumberFormat('en-US',{notation:'compact',maximumFractionDigits:1}).format(n);
   if(n>=1e8)return `${+(n/1e8).toFixed(1)} 亿`;
   if(n>=1e4)return `${+(n/1e4).toFixed(1)} 万`;
   return String(n);
@@ -181,7 +182,7 @@ function renderSkillhubPager(){
   host.hidden=s.loading||!!s.error||!s.items.length||pages<=1;
   if(host.hidden){host.innerHTML='';return}
   const p=Math.min(s.page,pages);
-  host.innerHTML=`<span>第 ${p} / ${pages.toLocaleString('zh-CN')} 页</span><div class="skillhub-pages"><button type="button" data-skillhub-page="${p-1}" aria-label="上一页"${p<=1?' disabled':''}>${huiIcon('chevron-left')}</button>${skillhubPageList(p,pages).map(x=>x==='…'?'<button type="button" disabled>…</button>':`<button type="button" data-skillhub-page="${x}"${x===p?' class="active" aria-current="page"':''}>${x}</button>`).join('')}<button type="button" data-skillhub-page="${p+1}" aria-label="下一页"${p>=pages?' disabled':''}>${huiIcon('chevron-right')}</button></div>`;
+  host.innerHTML=`<span>${lfT(`第 ${p} / ${pages.toLocaleString('zh-CN')} 页`,`Page ${p} of ${pages.toLocaleString('en-US')}`)}</span><div class="skillhub-pages"><button type="button" data-skillhub-page="${p-1}" aria-label="上一页"${p<=1?' disabled':''}>${huiIcon('chevron-left')}</button>${skillhubPageList(p,pages).map(x=>x==='…'?'<button type="button" disabled>…</button>':`<button type="button" data-skillhub-page="${x}"${x===p?' class="active" aria-current="page"':''}>${x}</button>`).join('')}<button type="button" data-skillhub-page="${p+1}" aria-label="下一页"${p>=pages?' disabled':''}>${huiIcon('chevron-right')}</button></div>`;
 }
 async function loadSkillhubMarket(){
   const s=skillhubState(),seq=++s.seq;

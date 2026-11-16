@@ -162,7 +162,7 @@ class ObserverStub {
   takeRecords() { return []; }
 }
 
-export async function loadApp({ routes = [], hash = '', dispatchReady = true, origin = 'http://127.0.0.1' } = {}) {
+export async function loadApp({ routes = [], hash = '', dispatchReady = true, origin = 'http://127.0.0.1', languagePolicy = '' } = {}) {
   const html = await readFile(path.join(WEB_ROOT, 'index.html'), 'utf8');
   const dom = new JSDOM(html, {
     runScripts: 'outside-only',
@@ -238,7 +238,11 @@ export async function loadApp({ routes = [], hash = '', dispatchReady = true, or
     return path.join(WEB_ROOT, decodeURIComponent(src.pathname).replace(/^\/+/, ''));
   });
   const context = dom.getInternalVMContext();
-  const sources = await Promise.all(files.map((filename) => readFile(filename, 'utf8')));
+  // The API server generates these scripts; serve what a fresh deployment returns.
+  const generated = {
+    [path.join(WEB_ROOT, 'platform-language.js')]: `window.LF_LANG_POLICY=${JSON.stringify(languagePolicy)};`,
+  };
+  const sources = await Promise.all(files.map((filename) => generated[filename] ?? readFile(filename, 'utf8')));
   for (let index = 0; index < files.length; index += 1) {
     new vm.Script(sources[index], { filename: files[index] }).runInContext(context);
   }

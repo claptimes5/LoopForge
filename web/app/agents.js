@@ -379,7 +379,7 @@ function syncAgentModalChrome(){
   if(cloneBtn)cloneBtn.hidden=catalogGeneric(state.workflow)||!foreign;
   if(next){next.hidden=!create;next.textContent=step===3?'创建':'下一步'}
   if(prev){prev.hidden=!create||step===1;prev.disabled=false}
-  const hint=$('#agentStepHint');if(hint)hint.textContent=create?`第 ${step} 步，共 3 步`:'';
+  const hint=$('#agentStepHint');if(hint)hint.textContent=create?lfT(`第 ${step} 步，共 3 步`,`Step ${step} of 3`):'';
   renderAgentSummary();
 }
 function agentWizardNext(){

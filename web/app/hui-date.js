@@ -9,7 +9,9 @@
   const doc = typeof document !== 'undefined' ? document : null;
   const supported = !!(doc && typeof doc.createElement === 'function' && typeof MutationObserver === 'function');
   const instances = new WeakMap();
-  const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日'];
+  const WEEKDAYS = typeof lfLang === 'function' && lfLang() === 'en'
+    ? ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+    : ['一', '二', '三', '四', '五', '六', '日'];
   const PLACEHOLDER = '选择日期';
   let serial = 0;
 

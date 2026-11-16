@@ -93,7 +93,7 @@ async function main() {
   status='running';[...intervals.values()][0]();await flush();assert.equal(intervals.size,1);
   status='succeeded';[...intervals.values()][0]();await flush();assert.equal(intervals.size,0);assert.equal(liveState.poll,null);assert.deepEqual(applied,['queued','running','succeeded']);
 
-  const machine=load({state:{runners:[{id:'m',name:'local',ownerUserId:9}]},escapeHTML:String},['runnerConcurrencyLabel','runExecutionChipHTML']);
+  const machine=load({state:{runners:[{id:'m',name:'local',ownerUserId:9}]},escapeHTML:String,lfT:zh=>zh},['runnerConcurrencyLabel','runExecutionChipHTML']);
   assert.match(machine.runnerConcurrencyLabel({ownerUserId:9}),/个人机器/);
   assert.doesNotMatch(machine.runnerConcurrencyLabel({ownerUserId:0,labels:{personal:'true'}}),/不受/);
   assert.match(machine.runExecutionChipHTML({executionContext:{executionMode:'runner',executionRunnerId:'m'}}),/不受项目 10/);

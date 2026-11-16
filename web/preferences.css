@@ -35,3 +35,7 @@ html[data-lang="en"] .topbar-project-label { white-space:nowrap }
 .repository-credential-hint button{flex:none;align-self:center}
 @media(max-width:600px){.repository-credential-hint{flex-direction:column;gap:8px}.repository-credential-hint button{align-self:flex-start}}
 
+
+/* A platform administrator locked the interface language; hide the switches. */
+:root[data-lang-locked="true"] #langToggle,
+:root[data-lang-locked="true"] #loginLang{display:none!important}

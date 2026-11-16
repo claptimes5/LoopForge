@@ -5,7 +5,9 @@
   const root = document.documentElement;
   const lang = root.dataset.lang === 'en' ? 'en' : 'zh';
   window.lfLang = () => lang;
+  window.lfLangLocked = () => root.dataset.langLocked === 'true';
   window.lfSetLang = next => {
+    if (window.lfLangLocked()) return;
     localStorage.setItem('loopforge.lang', next === 'en' ? 'en' : 'zh');
     location.reload();
   };
