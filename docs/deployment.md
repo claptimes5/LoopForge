@@ -125,6 +125,16 @@ unset account_password
 
 Use `-admin` only when granting platform administration. Running the command again rotates that account's password. Password hashes use bcrypt. Browser sessions use signed HttpOnly, SameSite cookies and expire after seven days. No named person receives an implicit administrator role; additional administrators can be managed through the existing platform administration UI.
 
+### Interface language
+
+By default every user switches between Chinese and English with the 中 / EN button in the top bar, and the choice is kept per browser. To show one language to everyone, a platform administrator opens **Platform administration → Interface language** (平台管理 → 界面语言) and picks **Always English** or **Always Chinese**. Every page, including the sign-in page, then opens in that language before it paints, ignores each browser's saved choice, and hides the switch. **Let each member choose** restores the default.
+
+The setting is the one row of the `platform_settings` table. Startup AutoMigrate creates the table; `migrations/034_platform_interface_language.sql` creates it by hand for installations that manage DDL themselves. With no row, members choose, so an upgrade changes nothing until an administrator saves a language.
+
+- Check the current value: `curl -s https://<host>/platform-language.js` prints `window.LF_LANG_POLICY="en";` (`"zh"` or `""` otherwise). The response is public and carries only that value.
+- Unlock without the UI: `UPDATE platform_settings SET interface_language='' WHERE id=1;`
+- After reverting a release that added it, the leftover table is unused; `DROP TABLE platform_settings;` removes it.
+
 ## Workers and runners
 
 The upstream process roles remain `-role api`, `-role worker` and `-role all`. API and worker instances must share the MySQL database and configuration appropriate to their deployment. Set `AGENTFLOW_CONTROL_TOKEN`, `AGENTFLOW_CONTROL_URL` and `AGENTFLOW_WORKER_URL` when separating control and execution. Set `AGENTFLOW_PLATFORM_MCP_URL` to the actual platform URL reachable from execution containers.
